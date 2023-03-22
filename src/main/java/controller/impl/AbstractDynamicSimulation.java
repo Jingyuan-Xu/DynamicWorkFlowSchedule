@@ -13,18 +13,21 @@ public abstract class AbstractDynamicSimulation implements DynamicSimulation {
     @Override
     public List<List<Chromosome>> sim(List<Chromosome> list1,List<Chromosome> list2) {
         try {
-            double beforeHV = DynamicUtils.HV(list1);
-            List<Chromosome> temp = new ArrayList<>();
+            List<Chromosome> temp1 = new ArrayList<>();
+            List<Chromosome> temp2 = new ArrayList<>();
             for(Chromosome chromosome:list1){
-                temp.add(chromosome.clone());
+                temp1.add(chromosome.clone());
             }
-            doSim(temp);
-            double afterHV = DynamicUtils.HV(temp);
+            for(Chromosome chromosome:list2){
+                temp2.add(chromosome.clone());
+            }
+            doSim(temp1);
+            doSim(temp2);
             Output output = new ChartOutputImpl();
             List<List<Chromosome>> ans = new ArrayList<>();
-            ans.add(list1);
-            ans.add(temp);
-            System.out.println("HV{before: "+ beforeHV + " | after: " + afterHV + " | " + "reduce: " + (beforeHV - afterHV)/beforeHV + "}");
+            ans.add(temp1);
+            ans.add(temp2);
+//            System.out.println("HV{before: "+ beforeHV + " | after: " + afterHV + " | " + "reduce: " + (beforeHV - afterHV)/beforeHV + "}");
             output.output(ans);
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
