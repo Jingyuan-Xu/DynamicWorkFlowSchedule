@@ -139,7 +139,6 @@ public class Chromosome implements Cloneable {
         chromosome.end=new double[end.length];
         chromosome.launchTime=new double[task.length];
         chromosome.shutdownTime=new double[task.length];
-
         chromosome.cost = cost;
         chromosome.makeSpan = makeSpan;
         System.arraycopy(task, 0, chromosome.task, 0, task.length);
