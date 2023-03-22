@@ -7,8 +7,8 @@ import java.util.List;
 
 public abstract class AbstractDynamicSimulation implements DynamicSimulation {
     @Override
-    public List<List<Chromosome>> sim(List<List<Chromosome>> list) {
+    public List<List<Chromosome>> sim(List<Chromosome> list) {
         return null;
     }
-    abstract void doSim(List<List<Chromosome>> list);
+    abstract void doSim(List<Chromosome> list);
 }

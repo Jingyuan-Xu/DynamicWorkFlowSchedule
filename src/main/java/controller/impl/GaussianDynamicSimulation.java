@@ -6,7 +6,7 @@ import java.util.List;
 
 public class GaussianDynamicSimulation extends AbstractDynamicSimulation{
     @Override
-    void doSim(List<List<Chromosome>> list) {
-        Lis
+    void doSim(List<Chromosome> list) {
+
     }
 }
