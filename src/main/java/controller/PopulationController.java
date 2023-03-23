@@ -15,4 +15,6 @@ public interface PopulationController {
 
     List<List<Chromosome>> iterate();
 
+    List<List<Chromosome>> rankReturnIterate(int x,int y);
+
 }

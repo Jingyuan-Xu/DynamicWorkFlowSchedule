@@ -16,6 +16,8 @@ public class DataPool {
     public static int typeNum;
     public static Type[] types;
 
+    public static double sigma = 0.1;
+
     public static List<List<Chromosome>> all = new LinkedList<>();
 
 }

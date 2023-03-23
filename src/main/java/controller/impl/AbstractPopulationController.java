@@ -89,6 +89,38 @@ public abstract class AbstractPopulationController implements PopulationControll
         return rank;
     }
 
+    public List<List<Chromosome>> rankReturnIterate(int x,int y){
+        int generation = Math.max(x,y) + 1;
+        try {
+            doInitial();
+            if(generation==0) {
+                List<List<Chromosome>> list=new ArrayList<>();
+                list.add(fa);
+                return list;
+            }
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+
+        List<List<Chromosome>> ans = new ArrayList<>();
+        for (int i = 0; i < generation; ++i) {
+            doProduce();
+            doSort();
+            doEliminate();
+            son.clear();
+            for (Chromosome chromosome : fa) {
+                chromosome.setBetterNum(0);
+                chromosome.setPoorNum(0);
+                chromosome.getBetter().clear();
+                chromosome.getPoor().clear();
+            }
+            List<Chromosome> list = rank.get(0);
+            if(i==x||i==y) ans.add(list);
+            DataPool.all.add(list);
+        }
+        return ans;
+    }
+
 
     public abstract void doInitial() throws CloneNotSupportedException;
 

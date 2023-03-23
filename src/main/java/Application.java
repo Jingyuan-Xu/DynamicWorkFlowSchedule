@@ -1,4 +1,6 @@
+import controller.DynamicSimulation;
 import controller.PopulationController;
+import controller.impl.GaussianDynamicSimulation;
 import controller.impl.NSGAIIPopulationController;
 import entity.Chromosome;
 import entity.DataPool;
@@ -9,6 +11,7 @@ import service.io.impl.ChartOutputImpl;
 import service.io.impl.ConsoleOutputImpl;
 import service.io.impl.XMLInputImpl;
 import utils.DataUtils;
+import utils.DynamicUtils;
 import utils.WriterUtils;
 
 import java.util.LinkedList;
@@ -30,12 +33,13 @@ public class Application {
         Input input=new XMLInputImpl();
         input.input();
         PopulationController controller = new NSGAIIPopulationController();
-        List<List<Chromosome>> list = controller.iterate();
+        List<List<Chromosome>> list = controller.rankReturnIterate(50,500);
+
+        DynamicSimulation sim = new GaussianDynamicSimulation();
+        sim.sim(list.get(0),list.get(1));
 
         Output output=new ChartOutputImpl();
         output.output(list);
-        Output output1=new ConsoleOutputImpl();
-        output1.output(list);
 
 //        List<Chromosome> front = new LinkedList<>();
 
