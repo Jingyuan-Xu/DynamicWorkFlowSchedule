@@ -83,7 +83,9 @@ public abstract class AbstractPopulationController implements PopulationControll
                 chromosome.getBetter().clear();
                 chromosome.getPoor().clear();
             }
+
             List<Chromosome> list = rank.get(0);
+
             DataPool.all.add(list);
         }
         return rank;

@@ -3,12 +3,18 @@ package controller.impl;
 import entity.Chromosome;
 import entity.DataPool;
 import entity.Task;
+import utils.DataUtils;
 import utils.MakeSpanUtils;
 
 import java.util.List;
 import java.util.Random;
 
+import static utils.DataUtils.getStartTime;
+
 public class GaussianDynamicSimulation extends AbstractDynamicSimulation{
+
+    private final Random random=new Random();
+
     @Override
     void doSim(List<Chromosome> list) {
         for(Chromosome chromosome:list){
@@ -16,69 +22,36 @@ public class GaussianDynamicSimulation extends AbstractDynamicSimulation{
         }
     }
 
-    private void setDynamicTarget(Chromosome chromosome){
-        Random random=new Random();
-        int[] order = chromosome.getTask();
-        int[] task2ins = chromosome.getTask2ins();
-        int[] ins2type = chromosome.getIns2type();
-
-        double cost = 0;
-        double makeSpan = 0;
-
-        // available time of instances
-        double[] availableTime = new double[order.length];
-        //exit time
+    public void setDynamicTarget(Chromosome chromosome){
+        double[] availableTime = new double[DataPool.insNum];
         double exitTime = 0;
-
-        for(int taskIndex : order){
-            int ins = task2ins[taskIndex];
-            int type = ins2type[ins];
-            Task task = DataPool.tasks[taskIndex];
-
-            // Calculate the start time of "task"
-            double startTime = 0;
-            for(int preTaskIndex : task.getPredecessor()){
-                Task preTask = DataPool.tasks[preTaskIndex];
-                int preIns = task2ins[preTaskIndex];
-                int preType = ins2type[preIns];
-
-                double minBandwidth = Math.min(DataPool.types[type].bw, DataPool.types[preType].bw);
-                double arrivalTime;
-                // arrival time of preTask = end time of preTask and Communication time
-                arrivalTime = chromosome.getEnd()[preTaskIndex] + MakeSpanUtils.getCommTime(preTask.getOutputSize(), minBandwidth);
-                startTime = Math.max(startTime, arrivalTime);
+        for (int taskIndex : chromosome.getTask()) {
+            Task task = DataPool.tasks[taskIndex].clone();
+            int insIndex = chromosome.getTask2ins()[taskIndex];
+            int typeIndex =  DataPool.insToType.get(insIndex);
+            if (task.getPredecessor().size() == 0) {
+                chromosome.getStart()[taskIndex] = Math.max(0, availableTime[insIndex]);
+                chromosome.getEnd()[taskIndex] = chromosome.getStart()[taskIndex] + task.getReferTime() / DataPool.types[typeIndex].cu + getGaussianRand(task.getReferTime() / DataPool.types[typeIndex].cu);
+                availableTime[insIndex] = chromosome.getEnd()[taskIndex];
+            } else {
+                chromosome.getStart()[taskIndex] = Math.max(getStartTime(chromosome, taskIndex), availableTime[insIndex]);
+                chromosome.getEnd()[taskIndex] = chromosome.getStart()[taskIndex] + DataPool.tasks[taskIndex].getReferTime() / DataPool.types[typeIndex].cu + getGaussianRand(task.getReferTime() / DataPool.types[typeIndex].cu);
+                availableTime[insIndex] = chromosome.getEnd()[taskIndex];
             }
-            startTime = Math.max(startTime, availableTime[ins]);
-            chromosome.getStart()[taskIndex] = startTime;
-            chromosome.launchTime[ins] = Math.min(chromosome.launchTime[ins], startTime);
-
-            // Calculate the finish time of "task" and update other variables
-            double processingTime = task.getReferTime() / DataPool.types[type].cu;
-            processingTime = processingTime + Math.abs(random.nextGaussian(0, DataPool.sigma));
-            double finishTime = startTime + processingTime;
-            chromosome.getEnd()[taskIndex] = finishTime;
-            chromosome.shutdownTime[ins] = Math.max(chromosome.shutdownTime[ins], finishTime);
-
-            availableTime[ins] = finishTime;
-            if(task.getSuccessor().size() == 0) {
-                exitTime = Math.max(exitTime, finishTime);
+            if (chromosome.launchTime[insIndex] == 0) {
+                chromosome.launchTime[insIndex] = chromosome.getStart()[taskIndex];
+            }
+            chromosome.shutdownTime[insIndex] = chromosome.getEnd()[taskIndex];
+            if (task.getSuccessor().size() == 0) {
+                exitTime = Math.max(exitTime, chromosome.getEnd()[taskIndex]);
             }
         }
-        makeSpan = exitTime;
+        chromosome.setMakeSpan(exitTime);
+        chromosome.setCost(DataUtils.getCost(chromosome));
+    }
 
-        // Calculate the cost
-        for(int i = 0; i < task2ins.length;i++){
-            double launchTime = chromosome.launchTime[i];
-            double shutdownTime = chromosome.shutdownTime[i];
-            int typeIndex = ins2type[i];
-            if (launchTime != shutdownTime){
-                double price = DataPool.types[typeIndex].p;
-                cost += price * (shutdownTime - launchTime);
-            }
-        }
-        chromosome.setMakeSpan(makeSpan);
-        chromosome.setCost(cost);
-
+    public double getGaussianRand(double time){
+        return Math.abs(random.nextGaussian(0,time*0.1));
     }
 
 }

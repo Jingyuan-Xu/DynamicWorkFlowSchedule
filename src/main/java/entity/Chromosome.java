@@ -7,14 +7,13 @@ import java.util.List;
 public class Chromosome implements Cloneable {
     private int[] task;
     private int[] task2ins;
-    private int[] ins2type;
     private double cost;
     private double makeSpan;
     private double crowding;
     private double[] start=new double[DataPool.tasks.length];
     private double[] end=new double[DataPool.tasks.length];
-    public double[] launchTime=new double[DataPool.tasks.length];
-    public double[] shutdownTime=new double[DataPool.tasks.length];
+    public double[] launchTime=new double[DataPool.insNum];
+    public double[] shutdownTime=new double[DataPool.insNum];
 
     private final List<Chromosome> better = new LinkedList<>();
     private final List<Chromosome> poor = new LinkedList<>();
@@ -29,7 +28,6 @@ public class Chromosome implements Cloneable {
     public Chromosome(int[] order, int[] task2ins, int[] ins2type) {
         this.setTask(order);
         this.setTask2ins(task2ins);
-        this.setIns2type(ins2type);
         this.start=new double[order.length];
         this.end=new double[order.length];
     }
@@ -120,13 +118,7 @@ public class Chromosome implements Cloneable {
         this.task2ins = task2ins;
     }
 
-    public int[] getIns2type() {
-        return ins2type;
-    }
 
-    public void setIns2type(int[] ins2type) {
-        this.ins2type = ins2type;
-    }
 
     @Override
     public Chromosome clone() throws CloneNotSupportedException {
@@ -134,16 +126,14 @@ public class Chromosome implements Cloneable {
         Chromosome chromosome = new Chromosome();
         chromosome.task = new int[task.length];
         chromosome.task2ins = new int[task2ins.length];
-        chromosome.ins2type = new int[ins2type.length];
         chromosome.start=new double[start.length];
         chromosome.end=new double[end.length];
-        chromosome.launchTime=new double[task.length];
-        chromosome.shutdownTime=new double[task.length];
+        chromosome.launchTime=new double[DataPool.insNum];
+        chromosome.shutdownTime=new double[DataPool.insNum];
         chromosome.cost = cost;
         chromosome.makeSpan = makeSpan;
         System.arraycopy(task, 0, chromosome.task, 0, task.length);
         System.arraycopy(task2ins, 0, chromosome.task2ins, 0, task2ins.length);
-        System.arraycopy(ins2type, 0, chromosome.ins2type, 0, ins2type.length);
         System.arraycopy(start, 0, chromosome.start, 0, start.length);
         System.arraycopy(end, 0, chromosome.end, 0, end.length);
         return chromosome;
@@ -152,14 +142,13 @@ public class Chromosome implements Cloneable {
     public void print() {
         System.out.println("Order:           " + Arrays.toString(this.getTask()));
         System.out.println("Task to Instance:" + Arrays.toString(this.getTask2ins()));
-        System.out.println("Instance to type:" + Arrays.toString(this.getIns2type()));
     }
 
     @Override
     public boolean equals(Object obj) {
         Chromosome chromosome = (Chromosome) obj;
         for (int i = 0; i < chromosome.getTask().length; ++i) {
-            if (chromosome.getTask()[i] != getTask()[i] || chromosome.getIns2type()[i] != getIns2type()[i] || chromosome.getTask2ins()[i] == getTask2ins()[i]) {
+            if (chromosome.getTask()[i] != getTask()[i] || chromosome.getTask2ins()[i] == getTask2ins()[i]) {
                 return false;
             }
         }

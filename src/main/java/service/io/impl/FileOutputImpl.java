@@ -3,13 +3,11 @@ package service.io.impl;
 import entity.Chromosome;
 import service.io.Output;
 import utils.ConfigUtils;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
-
 public class FileOutputImpl implements Output {
     @Override
     public void output(List<List<Chromosome>> list) {

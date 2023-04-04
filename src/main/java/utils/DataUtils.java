@@ -12,13 +12,13 @@ import java.util.Random;
 public class DataUtils {
     private static final Random random = new Random();
 
-    private static double getMakeSpan(Chromosome chromosome) {
+    public static double getMakeSpan(Chromosome chromosome) {
         double[] availableTime = new double[DataPool.insNum];
         double exitTime = 0;
         for (int taskIndex : chromosome.getTask()) {
             Task task = DataPool.tasks[taskIndex].clone();
             int insIndex = chromosome.getTask2ins()[taskIndex];
-            int typeIndex = chromosome.getIns2type()[insIndex];
+            int typeIndex = DataPool.insToType.get(insIndex);
             if (task.getPredecessor().size() == 0) {
                 chromosome.getStart()[taskIndex] = Math.max(0, availableTime[insIndex]);
                 chromosome.getEnd()[taskIndex] = chromosome.getStart()[taskIndex] + task.getReferTime() / DataPool.types[typeIndex].cu;
@@ -39,12 +39,12 @@ public class DataUtils {
         return exitTime;
     }
 
-    private static double getCost(Chromosome chromosome) {
+    public static double getCost(Chromosome chromosome) {
         double sum = 0;
         int[] ins_flags = new int[DataPool.insNum];
         for (int ins_index : chromosome.getTask2ins()) {
             if (ins_flags[ins_index] == 0) {
-                int type_index = chromosome.getIns2type()[ins_index];
+                int type_index =  DataPool.insToType.get(ins_index);
                 int hours = (int) ((chromosome.shutdownTime[ins_index] - chromosome.launchTime[ins_index]) / 3600) + 1;
                 sum += hours * DataPool.types[type_index].p;
                 ins_flags[ins_index] = 1;
@@ -98,7 +98,6 @@ public class DataUtils {
         Chromosome chromosome = new Chromosome();
         chromosome.setTask(taskOrder);
         chromosome.setTask2ins(NSGAII.getRandomInstance(taskOrder.length));
-        chromosome.setIns2type(NSGAII.getRandomType(taskOrder.length));
         DataUtils.refresh(chromosome);
         return chromosome;
     }
@@ -109,11 +108,12 @@ public class DataUtils {
         int num = random.nextInt(10);
         if (num < 5) {
             for (int i = 0; i < ins.length; ++i) {
-                ins[i] = random.nextInt(order.length);
+                ins[i] = DataPool.accessibleIns.get(random.nextInt(DataPool.accessibleIns.size()));
             }
+        }else {
+            int insNum = DataPool.accessibleIns.get(random.nextInt(DataPool.accessibleIns.size()));
+            Arrays.fill(ins, insNum);
         }
-        int t = random.nextInt(DataPool.types.length);
-        Arrays.fill(type, t);
         Chromosome chromosome = new Chromosome(order, ins, type);
         DataUtils.refresh(chromosome);
         return chromosome;
@@ -137,7 +137,7 @@ public class DataUtils {
         for (int i = 0; i < chromosome.getTask().length; i++) {
             int task = chromosome.getTask()[i];
             int instance = chromosome.getTask2ins()[task];
-            int type = chromosome.getIns2type()[instance];
+            int type =  DataPool.insToType.get(instance);
             double cu = DataPool.types[type].cu;
             double referTime = DataPool.tasks[task].getReferTime();
             double actualTime = referTime / cu;
@@ -162,7 +162,7 @@ public class DataUtils {
         for (int i = 0; i < chromosome.getTask().length; i++) {
             int task = chromosome.getTask()[i];
             int instance = chromosome.getTask2ins()[task];
-            int type = chromosome.getIns2type()[instance];
+            int type =  DataPool.insToType.get(instance);
             Type t = DataPool.types[type];
             imbalanceDegree[instance] += DataPool.tasks[task].getReferTime() / t.cu;
         }
@@ -191,13 +191,13 @@ public class DataUtils {
         List<Integer> preTaskIndexes = DataPool.tasks[taskIndex].getPredecessor();
         int n = preTaskIndexes.size();
         int instanceIndex = chromosome.getTask2ins()[taskIndex];
-        int typeIndex = chromosome.getIns2type()[instanceIndex];
+        int typeIndex =  DataPool.insToType.get(instanceIndex);
         double[] communicationTime = new double[n];
         double[] after_communicationTime = new double[n];
         for (int i = 0; i < n; i++) {
             int preTaskIndex = preTaskIndexes.get(i);
             int preInstanceIndex = chromosome.getTask2ins()[preTaskIndex];
-            int preTypeIndex = chromosome.getIns2type()[preInstanceIndex];
+            int preTypeIndex =  DataPool.insToType.get(preInstanceIndex);
             double bw_min = Math.min(DataPool.types[typeIndex].bw, DataPool.types[preTypeIndex].bw);
             communicationTime[i] = DataPool.tasks[preTaskIndex].getOutputSize() / bw_min;
             after_communicationTime[i] = chromosome.getEnd()[preTaskIndex] + communicationTime[i];

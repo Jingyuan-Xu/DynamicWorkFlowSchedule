@@ -77,12 +77,6 @@ public class NSGAII implements EvolutionAlgorithm {
         X.getTask2ins()[p] = instance;
     }
 
-    public static void mutateType(Chromosome X) {
-        int number = X.getIns2type().length;
-        int p = random.nextInt(number);//generate the position where mutate occurs
-        int instance = random.nextInt(DataPool.insNum);//m is the number of instances available
-        X.getIns2type()[p] = instance;
-    }
 
     @Override
     public List<Chromosome> crossover(Chromosome A, Chromosome B) {
@@ -153,31 +147,9 @@ public class NSGAII implements EvolutionAlgorithm {
 
         for (int i = 0; i < p; i++) {
             int task = A.getTask()[i];
-            decideType(A, B, task, p);
-            decideType(B, A, task, p);
             int temp = A.getTask2ins()[task];
             A.getTask2ins()[task] = B.getTask2ins()[task];
             B.getTask2ins()[task] = temp;
-        }
-    }
-    public static void decideType(Chromosome A, Chromosome B, int task, int p) {
-        int Instance = A.getTask2ins()[task];
-        int TypeA = A.getIns2type()[Instance];
-        int TypeB = B.getIns2type()[Instance];
-        for (int i = p; i < A.getTask().length; i++) {
-            if (B.getTask2ins()[task] == Instance) {
-                if (TypeA != TypeB) {
-                    int r = random.nextInt(2);
-                    B.getIns2type()[Instance] = r == 0 ? TypeA : TypeB;
-                    return;
-                }
-            }
-        }
-        B.getIns2type()[Instance] = TypeA;
-        //mutate Pa with a small probability
-        int r = random.nextInt(1000);
-        if (r == 1) {
-            TypeA = random.nextInt(DataPool.typeNum);
         }
     }
 

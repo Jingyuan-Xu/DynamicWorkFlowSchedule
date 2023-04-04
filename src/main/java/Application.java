@@ -9,9 +9,11 @@ import service.io.Input;
 import service.io.Output;
 import service.io.impl.ChartOutputImpl;
 import service.io.impl.ConsoleOutputImpl;
+import service.io.impl.FileOutputImpl;
 import service.io.impl.XMLInputImpl;
 import utils.DataUtils;
 import utils.DynamicUtils;
+import utils.InitUtils;
 import utils.WriterUtils;
 
 import java.util.LinkedList;
@@ -19,27 +21,41 @@ import java.util.List;
 
 public class Application {
     public static void main(String[] args) {
-        Type[] types = new Type[8];
-        types[0] = new Type(0, 1.7/8, 39321600, 0.06);
-        types[1] = new Type(1, 3.75/8, 85196800, 0.12);
-        types[2] = new Type(2, 3.75/8, 85196800, 0.113);
-        types[3] = new Type(3, 7.5/8, 85196800, 0.24);
-        types[4] = new Type(4, 7.5/8, 85196800, 0.225);
-        types[5] = new Type(5, 15/8, 131072000, 0.48);
-        types[6] = new Type(6, 15/8, 131072000, 0.45);
-        types[7] = new Type(7, 30/8, 131072000, 0.9);
-        DataPool.typeNum = 8;
-        DataPool.types = types;
-        Input input=new XMLInputImpl();
-        input.input();
+        InitUtils.init();
         PopulationController controller = new NSGAIIPopulationController();
-        List<List<Chromosome>> list = controller.rankReturnIterate(50,500);
-
-        DynamicSimulation sim = new GaussianDynamicSimulation();
-        sim.sim(list.get(0),list.get(1));
-
-        Output output=new ChartOutputImpl();
+        List<List<Chromosome>> list=controller.iterate();
+        Output output = new ChartOutputImpl();
         output.output(list);
+//        List<List<Chromosome>> list = controller.rankReturnIterate(400,500);
+//        DynamicSimulation sim = new GaussianDynamicSimulation();
+//        Output output=new ChartOutputImpl();
+//        output.output(list);
+
+//        StringBuilder str1 = new StringBuilder();
+//        StringBuilder str2 = new StringBuilder();
+//        for(Chromosome chromosome:list.get(0)){
+//            str1.append(chromosome.getMakeSpan()).append(" ").append(chromosome.getCost()).append("\n");
+//        }
+//        for(Chromosome chromosome:list.get(1)){
+//            str2.append(chromosome.getMakeSpan()).append(" ").append(chromosome.getCost()).append("\n");
+//        }
+//        WriterUtils.write("src\\main\\resources\\output\\500_static.txt",str1.toString());
+//        WriterUtils.write("src\\main\\resources\\output\\400_static.txt",str2.toString());
+
+
+//        for(Chromosome chromosome:list.get(0)){
+//            chromosome.setCost(0);
+//            chromosome.setMakeSpan(0);
+//        }
+//
+//        for(Chromosome chromosome:list.get(1)){
+//            chromosome.setMakeSpan(0);
+//            chromosome.setCost(0);
+//        }
+//
+//        sim.sim(list.get(0),list.get(1));
+
+
 
 //        List<Chromosome> front = new LinkedList<>();
 
