@@ -51,7 +51,7 @@ public class GaussianDynamicSimulation extends AbstractDynamicSimulation{
     }
 
     public double getGaussianRand(double time){
-        return Math.abs(random.nextGaussian(0,time*0.1));
+        return Math.abs(DataPool.random.nextGaussian(0,time*0.1));
     }
 
 }

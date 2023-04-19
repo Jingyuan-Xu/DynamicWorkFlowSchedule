@@ -37,23 +37,22 @@ public class NSGAIIPopulationController extends AbstractPopulationController {
     @Override
     public void doProduce() {
         try {
-            Random random = new Random();
             while (getSon().size() < getFa().size()) {
-                int num1 = random.nextInt(getSize());
-                int num2 = random.nextInt(getSize());
+                int num1 = DataPool.random.nextInt(getSize());
+                int num2 = DataPool.random.nextInt(getSize());
                 while (num1 == num2) {
-                    num2 = random.nextInt(getSize());
+                    num2 = DataPool.random.nextInt(getSize());
                 }
+
                 Chromosome parent1 = getFa().get(num1).clone();
                 Chromosome parent2 = getFa().get(num2).clone();
                 Chromosome child1;
                 Chromosome child2;
-                do {
-                    List<Chromosome> childList = DataPool.nsgaii.crossover(parent1, parent2);
-                    child1 = childList.get(0);
-                    child2 = childList.get(1);
-                } while (getFa().contains(child1) || getFa().contains(child2) || getSon().contains(child1) || getSon().contains(child2));
-                if (random.nextInt(10000) < Double.parseDouble(ConfigUtils.get("evolution.population.mutation")) * 10000) {
+
+                List<Chromosome> childList = DataPool.nsgaii.crossover(parent1, parent2);
+                child1 = childList.get(0);
+                child2 = childList.get(1);
+                if (DataPool.random.nextInt(10000) < Double.parseDouble(ConfigUtils.get("evolution.population.mutation")) * 10000) {
                     child1 = DataPool.nsgaii.mutate(child1);
                     child2 = DataPool.nsgaii.mutate(child2);
                 }
@@ -79,6 +78,7 @@ public class NSGAIIPopulationController extends AbstractPopulationController {
             chromosome.setPoorNum(0);
             chromosome.getPoor().clear();
             chromosome.getBetter().clear();
+//            DataUtils.refresh(chromosome);
         }
         for (int i = 0; i < list.size(); ++i) {
             Chromosome chromosome = list.get(i);

@@ -18,8 +18,8 @@ public class NSGAII implements EvolutionAlgorithm {
         try {
             chromosome = (Chromosome) c.clone();
             double rate = Double.parseDouble(ConfigUtils.get("evolution.population.mutation"));
-            double r1 = random.nextDouble(0, 1);
-            double r2 = random.nextDouble(0, 1);
+            double r1 = DataPool.random.nextDouble(0, 1);
+            double r2 = DataPool.random.nextDouble(0, 1);
 //            double r3 = random.nextDouble(0, 1);
             if (r1 < rate){
                 mutateOrder(chromosome);
@@ -39,7 +39,7 @@ public class NSGAII implements EvolutionAlgorithm {
         return chromosome;
     }
     public static void mutateOrder(Chromosome X) {
-        int pos = random.nextInt(X.getTask().length);
+        int pos = DataPool.random.nextInt(X.getTask().length);
         Chromosome nc = null;
         try {
             nc = (Chromosome) X.clone();
@@ -56,7 +56,7 @@ public class NSGAII implements EvolutionAlgorithm {
         while (end < n && !task.getSuccessor().contains(DataPool.tasks[nc.getTask()[end]].getIndex())) {
             end++;
         }
-        int posN = random.nextInt(end - start - 1) + start + 1;
+        int posN = DataPool.random.nextInt(end - start - 1) + start + 1;
         int temp = nc.getTask()[pos];
         if (posN < pos) {
             for (int i = pos; i > posN; i--) {
@@ -72,8 +72,8 @@ public class NSGAII implements EvolutionAlgorithm {
 
     public static void mutateIns(Chromosome X) {
         int number = X.getTask2ins().length;
-        int p = random.nextInt(number);//generate the position where mutate occurs
-        int instance = random.nextInt(DataPool.insNum);//m is the number of instances available
+        int p = DataPool.random.nextInt(number);//generate the position where mutate occurs
+        int instance = DataPool.random.nextInt(DataPool.insNum);//m is the number of instances available
         X.getTask2ins()[p] = instance;
     }
 
@@ -103,7 +103,7 @@ public class NSGAII implements EvolutionAlgorithm {
         int n = A.getTask().length;
         //random is a random number generator
         //p is the cut position
-        int p = random.nextInt(n);
+        int p = DataPool.random.nextInt(n);
         int cursorA = p+1;
         int cursorB = p+1;
         int[] orderA = new int[n];
@@ -140,7 +140,7 @@ public class NSGAII implements EvolutionAlgorithm {
     public static void crossoverIns(Chromosome A, Chromosome B) {
         Random random = new Random();
         int n = A.getTask().length;
-        int p = random.nextInt(n);
+        int p = DataPool.random.nextInt(n);
 
         for (int i = 0; i < p; i++) {
             int task = A.getTask()[i];
@@ -153,14 +153,14 @@ public class NSGAII implements EvolutionAlgorithm {
     public static int[] getRandomInstance(int size) {
         int[] instances = new int[size];
         for (int i = 0; i < size; i++) {
-            instances[i] = random.nextInt(DataPool.insNum);
+            instances[i] = DataPool.random.nextInt(DataPool.insNum);
         }
         return instances;
     }
     public static int[] getRandomType(int size) {
         int[] types = new int[size];
         for (int i = 0; i < size; i++) {
-            types[i] = random.nextInt(DataPool.typeNum);
+            types[i] = DataPool.random.nextInt(DataPool.typeNum);
         }
         return types;
     }

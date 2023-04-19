@@ -27,7 +27,7 @@ public class ConsoleInputImpl implements Input {
         for(int i=0;i<DataPool.tasks.length;++i){
             DataPool.tasks[i]=new Task(i);
 //            DataPool.tasks[i].setDataSize(new Random().nextInt(100000,999999));
-            DataPool.tasks[i].setReferTime(new Random().nextInt(10,30));
+            DataPool.tasks[i].setReferTime(DataPool.random.nextInt(10,30));
         }
         while (true) {
             String str1=input.next();

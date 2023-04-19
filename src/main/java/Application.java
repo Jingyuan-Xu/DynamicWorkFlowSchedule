@@ -16,16 +16,20 @@ import utils.DynamicUtils;
 import utils.InitUtils;
 import utils.WriterUtils;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 public class Application {
     public static void main(String[] args) {
+
         InitUtils.init();
         PopulationController controller = new NSGAIIPopulationController();
         List<List<Chromosome>> list=controller.iterate();
-        Output output = new ChartOutputImpl();
+        Output output = new ConsoleOutputImpl();
         output.output(list);
+        DataUtils.operateHV(DataPool.all);
 //        List<List<Chromosome>> list = controller.rankReturnIterate(400,500);
 //        DynamicSimulation sim = new GaussianDynamicSimulation();
 //        Output output=new ChartOutputImpl();
@@ -146,7 +150,7 @@ public class Application {
 //
 //            WriterUtils.write("src\\main\\resources\\output\\HV"+i+".txt", DataUtils.operateHV(DataPool.all));
 //            DataPool.all=new LinkedList<>();
-////        System.out.println(DataUtils.getHV(500,100,list.get(0)));
+//        System.out.println(DataUtils.getHV(500,100,list.get(0)));
 //        }
     }
 

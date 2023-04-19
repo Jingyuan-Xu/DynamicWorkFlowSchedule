@@ -10,7 +10,6 @@ public class TaskGraph implements Cloneable{
     private boolean isFirst=false;
     Vertex start;
     Vertex end = new Vertex(Integer.MAX_VALUE);
-    private Random random=new Random();
     Vertex[] vertices;
     public TaskGraph(int n) {
         vertices = new Vertex[n];
@@ -102,7 +101,7 @@ public class TaskGraph implements Cloneable{
                 break;
             }
         }
-        int pos = random.nextInt(start,end+1);
+        int pos = DataPool.random.nextInt(start,end+1);
         list.add(pos,index);
     }
 

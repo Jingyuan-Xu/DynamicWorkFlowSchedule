@@ -6,6 +6,7 @@ import org.uma.jmetal.qualityindicator.impl.hypervolume.impl.WFGHypervolume;
 import service.algorithm.impl.NSGAII;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -77,7 +78,7 @@ public class DataUtils {
         NSGAII.crossoverOrder(c1, c2);
         NSGAII.crossoverIns(c1, c2);
 
-        if (random.nextInt(10000) < Double.parseDouble(ConfigUtils.get("evolution.population.mutation")) * 10000) {
+        if (DataPool.random.nextInt(10000) < Double.parseDouble(ConfigUtils.get("evolution.population.mutation")) * 10000) {
             DataPool.nsgaii.mutate(c1);
             DataPool.nsgaii.mutate(c2);
         }
@@ -90,7 +91,7 @@ public class DataUtils {
 
         if (c2.getCost() - c1.getCost() < -0.0001 && c2.getMakeSpan() - c1.getMakeSpan() < -0.0001) {
             return c2;
-        } else return random.nextInt(2) == 0 ? c1 : c2;
+        } else return DataPool.random.nextInt(2) == 0 ? c1 : c2;
 
     }
     public static Chromosome getRandomChromosome() {
@@ -105,13 +106,13 @@ public class DataUtils {
         int[] order = DataUtils.getRandomTopologicalSorting();
         int[] ins = new int[order.length];
         int[] type = new int[order.length];
-        int num = random.nextInt(10);
+        int num = DataPool.random.nextInt(10);
         if (num < 5) {
             for (int i = 0; i < ins.length; ++i) {
-                ins[i] = DataPool.accessibleIns.get(random.nextInt(DataPool.accessibleIns.size()));
+                ins[i] = DataPool.accessibleIns.get(DataPool.random.nextInt(DataPool.accessibleIns.size()));
             }
         }else {
-            int insNum = DataPool.accessibleIns.get(random.nextInt(DataPool.accessibleIns.size()));
+            int insNum = DataPool.accessibleIns.get(DataPool.random.nextInt(DataPool.accessibleIns.size()));
             Arrays.fill(ins, insNum);
         }
         Chromosome chromosome = new Chromosome(order, ins, type);
@@ -240,58 +241,40 @@ public class DataUtils {
 //        hypervolume.setReferenceFront(refer);
 //        return hypervolume.calculateHypervolume(targets, list.size(), 4);
 //    }
-    @Deprecated
+
     public static String operateHV(List<List<Chromosome>> list) {
-        double[] refer = new double[2];
-        double makeSpanMax = 0;
-        double costMax = 0;
-
-        double makeSpanMin = Double.MAX_VALUE;
-        double costMin = Double.MAX_VALUE;
-
-        for (List<Chromosome> chromosomes : list) {
-            for (Chromosome chromosome : chromosomes) {
-                double makeSpan = chromosome.getMakeSpan();
-                double cost = chromosome.getCost();
-
-                makeSpanMax = Math.max(makeSpan, makeSpanMax);
-                costMax = Math.max(cost, costMax);
-
-                makeSpanMin = Math.min(makeSpan, makeSpanMin);
-                costMin = Math.min(cost, costMin);
+        double maxMakeSpan = 0;
+        double maxCost = 0;
+        double minMakeSpan = Integer.MAX_VALUE;
+        double minCost = Integer.MAX_VALUE;
+        //找到所有代中，最大和最小的值
+        for(List<Chromosome> chromosomes:list){
+            for(Chromosome chromosome:chromosomes){
+                maxMakeSpan = Math.max(maxMakeSpan,chromosome.getMakeSpan());
+                maxCost = Math.max(maxCost,chromosome.getCost());
+                minMakeSpan = Math.min(minCost,chromosome.getMakeSpan());
+                minCost = Math.min(minCost,chromosome.getCost());
             }
         }
-        refer[0] = 1.1;
-        refer[1] = 1.1;
-
-        Hypervolume hypervolume=new WFGHypervolume(refer);
-        StringBuffer buffer=new StringBuffer();
-        StringBuilder stringBuilder=new StringBuilder();
-        for(int k=0;k<list.size();++k) {
-            List<Chromosome> list1 = list.get(k);
-            double[][] targets = new double[list1.size()][4];
-            double[] makeSpans = new double[list1.size()];
-            double[] costs = new double[list1.size()];
-            double[] utilizations = new double[list1.size()];
-            double[] DIs = new double[list1.size()];
-            for (int i = 0; i < list1.size(); ++i) {
-                Chromosome chromosome = list1.get(i);
-                double makeSpan = chromosome.getMakeSpan();
-                double cost = chromosome.getCost();
-                makeSpans[i] = (makeSpan - makeSpanMin) / (makeSpanMax - makeSpanMin);
-                costs[i] = (cost - costMin) / (costMax - costMin);
-
-                targets[i][0] = makeSpans[i];
-                targets[i][1] = costs[i];
-                targets[i][2] = utilizations[i];
-                targets[i][3] = DIs[i];
-                if(k==list.size()-1){
-                    stringBuilder.append(makeSpans[i]).append(" ").append(costs[i]).append(" ").append(utilizations[i]).append(" ").append(DIs[i]).append("\n");
-                }
+        StringBuilder str = new StringBuilder();
+        for(List<Chromosome> chromosomes:list){
+            chromosomes.sort(Comparator.comparingDouble(Chromosome::getMakeSpan));
+            double makespan[]=new double[chromosomes.size()];
+            double cost[] = new double[chromosomes.size()];
+            //按照makespan的顺序计算HV
+            for(int i=0;i<chromosomes.size();++i){
+                double makespan_i = chromosomes.get(i).getMakeSpan();
+                double cost_i = chromosomes.get(i).getCost();
+                makespan[i] = (makespan_i-minMakeSpan)/(maxMakeSpan-minMakeSpan);
+                cost[i] = (cost_i-minCost)/(maxCost-minCost);
             }
-            buffer.append(hypervolume.compute(targets)).append("\n");
+            double HV = (1.1-makespan[0])*(1.1-cost[0]);
+            for(int i=1;i<makespan.length;++i){
+                HV+=(1.1-makespan[i])*(cost[i-1]-cost[i]);
+            }
+            str.append(HV).append("\n");
         }
-        WriterUtils.write("src\\main\\resources\\output\\ParetoFront4.txt",stringBuilder.toString());
-        return buffer.toString();
+//        WriterUtils.write("src\\main\\resources\\output\\ParetoFront.txt",str.toString());
+        return str.toString();
     }
 }

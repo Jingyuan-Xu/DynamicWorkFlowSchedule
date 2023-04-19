@@ -3,24 +3,36 @@ package entity;
 
 import service.algorithm.impl.NSGAII;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class DataPool {
-    public static Task[] tasks;
+    public static Task[] tasks=new Task[0];
     public static TaskGraph graph;
     public static List<int[]> edges;
     public static NSGAII nsgaii = new NSGAII();
-    public static int insNum;
-    public static int typeNum;
+    public static int insNum=0;
+    public static int typeNum=0;
     public static Type[] types;
-
+    public static double weightVector[];
+    public static Random random=new Random();
     public static List<Integer> insToType=new ArrayList<>(250);
     public static List<Integer> accessibleIns=new ArrayList<>();
     public static HashSet<Integer> disabledIns=new HashSet<>();
 
     public static List<List<Chromosome>> all = new LinkedList<>();
+
+    public static void clear(){
+        tasks = new Task[0];
+        if(graph!=null) graph = graph.clone();
+        if(edges!=null) edges.clear();
+        nsgaii = new NSGAII();
+        insNum=0;
+        typeNum = 0;
+        types = null;
+        weightVector = null;insToType.clear();
+        accessibleIns.clear();
+        disabledIns.clear();
+        all.clear();
+    }
 
 }

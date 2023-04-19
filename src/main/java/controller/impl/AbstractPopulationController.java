@@ -4,6 +4,8 @@ import controller.PopulationController;
 import entity.Chromosome;
 import entity.DataPool;
 import utils.ConfigUtils;
+import utils.CrashUtils;
+import utils.DataUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -73,21 +75,33 @@ public abstract class AbstractPopulationController implements PopulationControll
             throw new RuntimeException(e);
         }
         for (int i = 0; i < generation; ++i) {
+            System.out.println(i);
+            CrashUtils.similarityCrash(i,fa);
             doProduce();
             doSort();
             doEliminate();
             son.clear();
             for (Chromosome chromosome : fa) {
+                DataUtils.refresh(chromosome);
                 chromosome.setBetterNum(0);
                 chromosome.setPoorNum(0);
                 chromosome.getBetter().clear();
                 chromosome.getPoor().clear();
             }
-
-            List<Chromosome> list = rank.get(0);
-
+            List<Chromosome> list = new ArrayList<>();
+            for(int k=0;k<rank.get(0).size();++k){
+                try {
+                    list.add(rank.get(0).get(k).clone());
+                } catch (CloneNotSupportedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+//            List<List<Chromosome>> fronts = new ArrayList<>();
+//            fronts.add(list);
+//            System.out.println(i+" "+DataUtils.operateHV(fronts));
             DataPool.all.add(list);
         }
+        DataUtils.operateHV(DataPool.all);
         return rank;
     }
 
