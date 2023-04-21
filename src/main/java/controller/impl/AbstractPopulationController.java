@@ -3,6 +3,7 @@ package controller.impl;
 import controller.PopulationController;
 import entity.Chromosome;
 import entity.DataPool;
+import service.crash.Crash;
 import utils.ConfigUtils;
 import utils.CrashUtils;
 import utils.DataUtils;
@@ -15,6 +16,7 @@ public abstract class AbstractPopulationController implements PopulationControll
     private final int size;
     private final int generation;
     private final double mutation;
+    public Crash crash;
 
     private List<Chromosome> fa;
     private final List<Chromosome> son;
@@ -75,8 +77,7 @@ public abstract class AbstractPopulationController implements PopulationControll
             throw new RuntimeException(e);
         }
         for (int i = 0; i < generation; ++i) {
-            System.out.println(i);
-            CrashUtils.similarityCrash(i,fa);
+            crash.crash(i,fa,this);
             doProduce();
             doSort();
             doEliminate();

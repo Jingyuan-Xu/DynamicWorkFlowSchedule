@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Random;
 
 public class NSGAII implements EvolutionAlgorithm {
-    public static Random random = new Random();
     @Override
     public Chromosome mutate(Chromosome c) {
         Chromosome chromosome = null;
@@ -138,7 +137,6 @@ public class NSGAII implements EvolutionAlgorithm {
         return false;
     }
     public static void crossoverIns(Chromosome A, Chromosome B) {
-        Random random = new Random();
         int n = A.getTask().length;
         int p = DataPool.random.nextInt(n);
 

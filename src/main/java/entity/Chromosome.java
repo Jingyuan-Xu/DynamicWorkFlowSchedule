@@ -25,7 +25,7 @@ public class Chromosome implements Cloneable {
 
     }
 
-    public Chromosome(int[] order, int[] task2ins, int[] ins2type) {
+    public Chromosome(int[] order, int[] task2ins) {
         this.setTask(order);
         this.setTask2ins(task2ins);
         this.start=new double[order.length];

@@ -24,7 +24,7 @@ public class CostMin {
             ins[i]=i;
             type[i]=DataPool.types[index].id;
         }
-        Chromosome chromosome=new Chromosome(order,ins,type);
+        Chromosome chromosome=new Chromosome(order,ins);
         return chromosome;
     }
 }

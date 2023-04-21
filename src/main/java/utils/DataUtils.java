@@ -1,17 +1,14 @@
 package utils;
 
 import entity.*;
-import org.uma.jmetal.qualityindicator.impl.hypervolume.Hypervolume;
-import org.uma.jmetal.qualityindicator.impl.hypervolume.impl.WFGHypervolume;
 import service.algorithm.impl.NSGAII;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
 
 public class DataUtils {
-    private static final Random random = new Random();
 
     public static double getMakeSpan(Chromosome chromosome) {
         double[] availableTime = new double[DataPool.insNum];
@@ -105,7 +102,6 @@ public class DataUtils {
     public static Chromosome getInitialChromosome() {
         int[] order = DataUtils.getRandomTopologicalSorting();
         int[] ins = new int[order.length];
-        int[] type = new int[order.length];
         int num = DataPool.random.nextInt(10);
         if (num < 5) {
             for (int i = 0; i < ins.length; ++i) {
@@ -115,7 +111,7 @@ public class DataUtils {
             int insNum = DataPool.accessibleIns.get(DataPool.random.nextInt(DataPool.accessibleIns.size()));
             Arrays.fill(ins, insNum);
         }
-        Chromosome chromosome = new Chromosome(order, ins, type);
+        Chromosome chromosome = new Chromosome(order, ins);
         DataUtils.refresh(chromosome);
         return chromosome;
     }
@@ -277,4 +273,46 @@ public class DataUtils {
 //        WriterUtils.write("src\\main\\resources\\output\\ParetoFront.txt",str.toString());
         return str.toString();
     }
+
+    public static String operateHV(List<List<Chromosome>> list,double maxMS,double minMS,double minC,double maxC){
+        StringBuilder str = new StringBuilder();
+        for(List<Chromosome> chromosomes:list){
+            chromosomes.sort(Comparator.comparingDouble(Chromosome::getMakeSpan));
+            double[] makespan =new double[chromosomes.size()];
+            double[] cost = new double[chromosomes.size()];
+            //按照makespan的顺序计算HV
+            for(int i=0;i<chromosomes.size();++i){
+                double makespan_i = chromosomes.get(i).getMakeSpan();
+                double cost_i = chromosomes.get(i).getCost();
+                makespan[i] = (makespan_i- minMS)/(maxMS - minMS);
+                cost[i] = (cost_i- minC)/(maxC - minC);
+            }
+            double HV = (1.1-makespan[0])*(1.1-cost[0]);
+            for(int i=1;i<makespan.length;++i){
+                HV+=(1.1-makespan[i])*(cost[i-1]-cost[i]);
+            }
+            str.append(HV).append("\n");
+        }
+//        WriterUtils.write("src\\main\\resources\\output\\ParetoFront.txt",str.toString());
+        return str.toString();
+    }
+
+    public static List<List<Chromosome>> cloneList(List<List<Chromosome>> list){
+        try {
+            List<List<Chromosome>> newList = new ArrayList<>();
+            for(List<Chromosome> l:list){
+                List<Chromosome> newL = new ArrayList<>();
+                for(Chromosome chromosome:l){
+                    newL.add(chromosome.clone());
+                }
+                newList.add(newL);
+            }
+
+            return newList;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
 }

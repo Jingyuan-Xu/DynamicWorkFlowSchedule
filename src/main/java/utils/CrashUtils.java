@@ -25,7 +25,6 @@ public class CrashUtils {
     public static void commonCrash(int generation, List<Chromosome> list){
         if(!generations.contains(generation)) return;
         randomShutdownMachine();
-
         for(int x=0;x<list.size();++x){
             Chromosome chromosome = list.get(x);
             for(int i=0;i<chromosome.getTask2ins().length;++i){
@@ -82,12 +81,20 @@ public class CrashUtils {
     public static int getMostSimilarIns(int ins,Chromosome chromosome){
         int type = DataPool.insToType.get(ins);
         Type currType = DataPool.types[type];
-        double feature = currType.cu*DataPool.weightVector[0] + currType.bw*DataPool.weightVector[1] + currType.p*DataPool.weightVector[2];
+        double cu = currType.cu*DataPool.weightVector[0];
+        double bw = currType.bw*DataPool.weightVector[1];
+        double p = currType.p*DataPool.weightVector[2];
+        int currWorkload = 0;
+        for(int x:chromosome.getTask2ins()){
+            if(x==ins) currWorkload++;
+        }
         List<Pair> list = new ArrayList<>();
         for(int num:DataPool.accessibleIns){
             Type insType = DataPool.types[DataPool.insToType.get(num)];
             Pair pair = new Pair();
-            pair.distance = Math.abs(insType.feature - feature);
+            pair.cu = insType.cu*DataPool.weightVector[0];
+            pair.bw = insType.bw*DataPool.weightVector[1];
+            pair.p = insType.p*DataPool.weightVector[2];
             pair.ins = num;
             int workLoad = 0;
             for(int x:chromosome.getTask2ins()){
@@ -96,9 +103,7 @@ public class CrashUtils {
             pair.workload = workLoad;
             list.add(pair);
         }
-        double x = 1;
-        double y = 0.1;
-        list.sort(Comparator.comparingDouble(o->(o.distance*x + y*o.workload)));
+        list.sort(Comparator.comparingDouble(o->(Math.pow(Math.pow(Math.abs(cu-o.cu),3)+Math.pow(Math.abs(bw-o.bw),3)+Math.pow(Math.abs(p-o.p),3),1.0/3))));
         return list.get(0).ins;
     }
 
@@ -130,7 +135,9 @@ public class CrashUtils {
 
     static class Pair{
         int ins;
-        double distance;
+        double cu;
+        double bw;
+        double p;
         int workload;
 
     }

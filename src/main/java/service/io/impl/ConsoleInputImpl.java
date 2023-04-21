@@ -5,7 +5,6 @@ import entity.Task;
 import entity.TaskGraph;
 import service.io.Input;
 
-import java.util.Random;
 import java.util.Scanner;
 
 public class ConsoleInputImpl implements Input {

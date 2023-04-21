@@ -8,10 +8,8 @@ import utils.InitUtils;
 import utils.WriterUtils;
 
 import java.util.List;
-import java.util.Random;
 
 public class ReliabilityTest {
-    private static final Random random=new Random();
     private static double failureFrequency;
     private static double []failureSeverity = {0.01,0.03,0.08,0.15};
 
@@ -29,7 +27,7 @@ public class ReliabilityTest {
                 List<Chromosome> POF = list.get(0);
                 int numberOfFailure = (int) (DataPool.insNum * failureSeverity[k]);
                 for (int j = 0; j < numberOfFailure; j++) {
-                    int failureIns = random.nextInt(DataPool.insNum);
+                    int failureIns = DataPool.random.nextInt(DataPool.insNum);
                     if (DataPool.disabledIns.contains(failureIns)){
                         j--;
                     } else {

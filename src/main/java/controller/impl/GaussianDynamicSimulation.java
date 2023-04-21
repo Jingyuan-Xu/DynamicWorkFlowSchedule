@@ -7,13 +7,10 @@ import utils.DataUtils;
 import utils.MakeSpanUtils;
 
 import java.util.List;
-import java.util.Random;
 
 import static utils.DataUtils.getStartTime;
 
 public class GaussianDynamicSimulation extends AbstractDynamicSimulation{
-
-    private final Random random=new Random();
 
     @Override
     void doSim(List<Chromosome> list) {
