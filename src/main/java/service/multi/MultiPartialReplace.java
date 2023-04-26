@@ -6,6 +6,7 @@ import entity.DataPool;
 import service.crash.PartialReplaceCrash;
 import service.io.Output;
 import service.io.impl.ConsoleOutputImpl;
+import service.io.impl.FileOutputImpl;
 import utils.DataUtils;
 import utils.InitUtils;
 import utils.WriterUtils;
@@ -15,6 +16,7 @@ import java.util.Random;
 
 public class MultiPartialReplace {
     public static void main(String[] args) {
+        runPartialReplace(0);
     }
 
     public static void runPartialReplace(int i) {
@@ -24,6 +26,8 @@ public class MultiPartialReplace {
         NSGAIIPopulationController controller = new NSGAIIPopulationController();
         controller.crash = new PartialReplaceCrash();
         List<List<Chromosome>> list = controller.iterate();
+        Output output = new FileOutputImpl();
+        output.output(list);
 //            Output output = new ConsoleOutputImpl();
 //            output.output(list);
 //            String str = DataUtils.operateHV(DataPool.all);
