@@ -57,11 +57,7 @@ public class CrashUtils {
         controller.getFa().clear();
         controller.getSon().clear();
         controller.getRank().clear();
-        try {
-            controller.doInitial();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
+        controller.doInitial();
     }
 
     public static void similarityCrash(int generation, List<Chromosome> list){

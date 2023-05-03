@@ -1,14 +1,12 @@
 package service.multi;
 
 import controller.impl.NSGAIIPopulationController;
-import entity.Chromosome;
 import entity.DataPool;
 import service.crash.SimilarityFixedCrash;
-import service.io.Output;
-import service.io.impl.FileOutputImpl;
-import utils.*;
+import utils.ConfigUtils;
+import utils.CrashUtils;
+import utils.InitUtils;
 
-import java.util.List;
 import java.util.Random;
 
 public class MultiPopulationFixed {
@@ -29,7 +27,7 @@ public class MultiPopulationFixed {
         controller.doInitial();
 
         for(int k=0;k<generation;++k){
-            List<List<Chromosome>> list = controller.iterateACycle(k,DataPool.all);
+            controller.iterateACycle(k,DataPool.all);
             if(CrashUtils.generations.contains(k)){
                 controller.isChanged = true;
                 DA = new NSGAIIPopulationController();
@@ -37,6 +35,7 @@ public class MultiPopulationFixed {
             }
             if(DA!=null) DA.iterateACycle(0,null);
         }
+        DA = null;
 
 //        Output output = new FileOutputImpl();
 //        output.output(list);

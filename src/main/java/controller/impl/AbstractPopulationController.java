@@ -41,11 +41,7 @@ public abstract class AbstractPopulationController implements PopulationControll
 
     @Override
     public void initialPopulation() {
-        try {
-            doInitial();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
+        doInitial();
     }
 
     @Override
@@ -66,11 +62,7 @@ public abstract class AbstractPopulationController implements PopulationControll
     @Override
     public List<List<Chromosome>> iterate() {
         int generation = Integer.parseInt(ConfigUtils.get("evolution.population.generation"));
-        try {
-            doInitial();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
+        doInitial();
         for (int i = 0; i < generation; ++i) {
             iterateACycle(i,DataPool.all);
         }
@@ -108,15 +100,11 @@ public abstract class AbstractPopulationController implements PopulationControll
 
     public List<List<Chromosome>> rankReturnIterate(int x,int y){
         int generation = Math.max(x,y) + 1;
-        try {
-            doInitial();
-            if(generation==0) {
-                List<List<Chromosome>> list=new ArrayList<>();
-                list.add(fa);
-                return list;
-            }
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
+        doInitial();
+        if(generation==0) {
+            List<List<Chromosome>> list=new ArrayList<>();
+            list.add(fa);
+            return list;
         }
 
         List<List<Chromosome>> ans = new ArrayList<>();
@@ -139,7 +127,7 @@ public abstract class AbstractPopulationController implements PopulationControll
     }
 
 
-    public abstract void doInitial() throws CloneNotSupportedException;
+    public abstract void doInitial();
 
     public abstract void doProduce();
 

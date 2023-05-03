@@ -1,18 +1,10 @@
 package service.multi;
 
 import controller.impl.NSGAIIPopulationController;
-import entity.Chromosome;
 import entity.DataPool;
 import service.crash.SimilarityFixedCrash;
-import service.io.Output;
-import service.io.impl.ChartOutputImpl;
-import service.io.impl.ConsoleOutputImpl;
-import service.io.impl.FileOutputImpl;
-import utils.DataUtils;
 import utils.InitUtils;
-import utils.WriterUtils;
 
-import java.util.List;
 import java.util.Random;
 
 public class MultiSimilarityReplace {

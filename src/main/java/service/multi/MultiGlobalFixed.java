@@ -2,16 +2,11 @@ package service.multi;
 
 import entity.Chromosome;
 import entity.DataPool;
-import service.io.Output;
-import service.io.impl.ChartOutputImpl;
-import service.io.impl.XMLInputImpl;
 import utils.DataUtils;
 import utils.InitUtils;
 import utils.WriterUtils;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class MultiGlobalFixed {
     public static void main(String[] args) {
