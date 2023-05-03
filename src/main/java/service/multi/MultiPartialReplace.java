@@ -25,12 +25,11 @@ public class MultiPartialReplace {
         InitUtils.init();
         NSGAIIPopulationController controller = new NSGAIIPopulationController();
         controller.crash = new PartialReplaceCrash();
-        List<List<Chromosome>> list = controller.iterate();
-        Output output = new FileOutputImpl();
-        output.output(list);
+        controller.iterate();
 //            Output output = new ConsoleOutputImpl();
 //            output.output(list);
 //            String str = DataUtils.operateHV(DataPool.all);
 //            WriterUtils.write("src\\main\\resources\\output\\Partial_Replace_Crash_" + i + ".txt", str);
     }
+
 }

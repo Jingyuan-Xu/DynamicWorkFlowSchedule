@@ -3,6 +3,7 @@ package controller.impl;
 import entity.Chromosome;
 import entity.DataPool;
 import service.algorithm.impl.NSGAII;
+import service.multi.MultiPopulationFixed;
 import utils.ConfigUtils;
 import utils.DataUtils;
 
@@ -12,6 +13,7 @@ import java.util.Random;
 
 public class NSGAIIPopulationController extends AbstractPopulationController {
     private final NSGAII nsgaii = DataPool.nsgaii;
+    public boolean isChanged = false;
 
     @Override
     public void doInitial() {
@@ -37,30 +39,63 @@ public class NSGAIIPopulationController extends AbstractPopulationController {
     @Override
     public void doProduce() {
         try {
-            while (getSon().size() < getFa().size()) {
-                int num1 = DataPool.random.nextInt(getSize());
-                int num2 = DataPool.random.nextInt(getSize());
-                while (num1 == num2) {
-                    num2 = DataPool.random.nextInt(getSize());
+            if(!isChanged) {
+                while (getSon().size() < getFa().size()) {
+                    int num1 = DataPool.random.nextInt(getSize());
+                    int num2 = DataPool.random.nextInt(getSize());
+                    while (num1 == num2) {
+                        num2 = DataPool.random.nextInt(getSize());
+                    }
+
+                    Chromosome parent1 = getFa().get(num1).clone();
+                    Chromosome parent2 = getFa().get(num2).clone();
+                    Chromosome child1;
+                    Chromosome child2;
+
+                    List<Chromosome> childList = DataPool.nsgaii.crossover(parent1, parent2);
+                    child1 = childList.get(0);
+                    child2 = childList.get(1);
+                    if (DataPool.random.nextInt(10000) < Double.parseDouble(ConfigUtils.get("evolution.population.mutation")) * 10000) {
+                        child1 = DataPool.nsgaii.mutate(child1);
+                        child2 = DataPool.nsgaii.mutate(child2);
+                    }
+                    DataUtils.refresh(child1);
+                    DataUtils.refresh(child2);
+
+                    getSon().add(child1);
+                    getSon().add(child2);
                 }
+            }else {
+                while (getSon().size() < getFa().size()) {
+                    int num1 = DataPool.random.nextInt(getSize());
+                    int num2 = DataPool.random.nextInt(getSize());
+                    while (num1 == num2) {
+                        num2 = DataPool.random.nextInt(getSize());
+                    }
 
-                Chromosome parent1 = getFa().get(num1).clone();
-                Chromosome parent2 = getFa().get(num2).clone();
-                Chromosome child1;
-                Chromosome child2;
+                    Chromosome parent1 = getFa().get(num1).clone();
+                    Chromosome parent2 = getFa().get(num2).clone();
+                    Chromosome child1;
+                    Chromosome child2;
+                    if(DataPool.random.nextInt(10)<5){
+                        NSGAIIPopulationController controller = MultiPopulationFixed.DA;
+                        num2 = DataPool.random.nextInt(controller.getSize());
+                        parent2 = controller.getFa().get(num2).clone();
+                    }
 
-                List<Chromosome> childList = DataPool.nsgaii.crossover(parent1, parent2);
-                child1 = childList.get(0);
-                child2 = childList.get(1);
-                if (DataPool.random.nextInt(10000) < Double.parseDouble(ConfigUtils.get("evolution.population.mutation")) * 10000) {
-                    child1 = DataPool.nsgaii.mutate(child1);
-                    child2 = DataPool.nsgaii.mutate(child2);
+                    List<Chromosome> childList = DataPool.nsgaii.crossover(parent1, parent2);
+                    child1 = childList.get(0);
+                    child2 = childList.get(1);
+                    if (DataPool.random.nextInt(10000) < Double.parseDouble(ConfigUtils.get("evolution.population.mutation")) * 10000) {
+                        child1 = DataPool.nsgaii.mutate(child1);
+                        child2 = DataPool.nsgaii.mutate(child2);
+                    }
+                    DataUtils.refresh(child1);
+                    DataUtils.refresh(child2);
+
+                    getSon().add(child1);
+                    getSon().add(child2);
                 }
-                DataUtils.refresh(child1);
-                DataUtils.refresh(child2);
-
-                getSon().add(child1);
-                getSon().add(child2);
             }
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);

@@ -1,18 +1,22 @@
 package service.multi;
 
-import controller.impl.AbstractPopulationController;
-import controller.impl.NSGAIIPopulationController;
 import entity.Chromosome;
 import entity.DataPool;
+import service.io.Output;
+import service.io.impl.ChartOutputImpl;
+import service.io.impl.XMLInputImpl;
 import utils.DataUtils;
+import utils.InitUtils;
 import utils.WriterUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class MultiGlobalFixed {
     public static void main(String[] args) {
         for(int i=0;i<30;++i) {
+            InitUtils.init();
             System.out.println("--------------------repeat times:"+" "+i+"--------------------");
             System.out.println("----------cold start running----------");
             MultiColdStart.runColdStart(i);
@@ -46,6 +50,15 @@ public class MultiGlobalFixed {
             System.out.println("----------similarity fixed finished----------");
             System.out.println("----------cloning paretoFront----------");
             List<List<Chromosome>> similarityFixed = DataUtils.cloneList(DataPool.all);
+            System.out.println("----------cloning finished----------");
+
+            System.out.println();
+
+            System.out.println("----------population fixed running----------");
+            MultiPopulationFixed.runPopulationFixed(i);
+            System.out.println("----------population fixed finished----------");
+            System.out.println("----------cloning paretoFront----------");
+            List<List<Chromosome>> populationFixed = DataUtils.cloneList(DataPool.all);
             System.out.println("----------cloning finished----------");
 
             System.out.println();
@@ -91,6 +104,15 @@ public class MultiGlobalFixed {
                 }
             }
 
+            for(List<Chromosome> list:populationFixed){
+                for(Chromosome chromosome:list){
+                    maxMakeSpan = Math.max(maxMakeSpan,chromosome.getMakeSpan());
+                    minMakeSpan = Math.min(minMakeSpan,chromosome.getMakeSpan());
+                    maxCost = Math.max(maxCost,chromosome.getCost());
+                    minCost = Math.min(minCost,chromosome.getCost());
+                }
+            }
+
             String str1 = DataUtils.operateHV(coldStart,maxMakeSpan,minMakeSpan,minCost,maxCost);
             WriterUtils.write("src\\main\\resources\\output\\ColdStart_" + i + ".txt", str1);
 
@@ -102,6 +124,9 @@ public class MultiGlobalFixed {
 
             String str4 = DataUtils.operateHV(similarityFixed,maxMakeSpan,minMakeSpan,minCost,maxCost);
             WriterUtils.write("src\\main\\resources\\output\\SimilarityFixed_" + i + ".txt", str4);
+
+            String str5 = DataUtils.operateHV(populationFixed,maxMakeSpan,minMakeSpan,minCost,maxCost);
+            WriterUtils.write("src\\main\\resources\\output\\PopulationFixed_" + i + ".txt", str5);
         }
     }
 }

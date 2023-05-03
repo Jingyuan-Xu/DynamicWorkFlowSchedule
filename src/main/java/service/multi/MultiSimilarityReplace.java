@@ -26,9 +26,7 @@ public class MultiSimilarityReplace {
         InitUtils.init();
         NSGAIIPopulationController controller = new NSGAIIPopulationController();
         controller.crash = new SimilarityFixedCrash();
-        List<List<Chromosome>> list = controller.iterate();
-        Output output = new FileOutputImpl();
-        output.output(list);
+        controller.iterate();
 //            Output output = new ConsoleOutputImpl();
 //            output.output(list);
 //            String str = DataUtils.operateHV(DataPool.all);

@@ -9,7 +9,7 @@ import io.jenetics.util.ProxySorter;
 import java.util.*;
 
 public class CrashUtils {
-    private static final HashSet<Integer> generations=new HashSet<>();
+    public static final HashSet<Integer> generations=new HashSet<>();
     private static final double severity;
     static {
         String generation = ConfigUtils.get("ins.crash.generation");

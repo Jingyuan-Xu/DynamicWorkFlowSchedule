@@ -23,13 +23,14 @@ public class DataPool {
 
     public static void clear(){
         tasks = new Task[0];
-        if(graph!=null) graph = graph.clone();
+        graph = graph.clone();
         if(edges!=null) edges.clear();
         nsgaii = new NSGAII();
         insNum=0;
         typeNum = 0;
         types = null;
-        weightVector = null;insToType.clear();
+        weightVector = null;
+        insToType.clear();
         accessibleIns.clear();
         disabledIns.clear();
         all.clear();
