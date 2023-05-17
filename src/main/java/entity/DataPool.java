@@ -20,7 +20,6 @@ public class DataPool {
     public static HashSet<Integer> disabledIns=new HashSet<>();
 
     public static List<List<Chromosome>> all = new LinkedList<>();
-
     public static void clear(){
         tasks = new Task[0];
         graph = graph.clone();

@@ -22,8 +22,8 @@ public abstract class AbstractDynamicSimulation implements DynamicSimulation {
             }
             doSim(temp1);
             doSim(temp2);
-            List<Chromosome> front1 = paretoEstimate(true,temp1);//50
-            List<Chromosome> front2 = paretoEstimate(true,temp2);//500
+            List<Chromosome> front1 = paretoEstimate(true,temp1); //50
+            List<Chromosome> front2 = paretoEstimate(true,temp2); //500
             Output output = new ChartOutputImpl();
             List<List<Chromosome>> ans = new ArrayList<>();
             ans.add(front1);

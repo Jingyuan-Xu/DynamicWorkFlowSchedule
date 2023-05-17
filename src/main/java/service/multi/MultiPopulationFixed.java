@@ -27,12 +27,12 @@ public class MultiPopulationFixed {
         controller.doInitial();
 
         for(int k=0;k<generation;++k){
-            controller.iterateACycle(k,DataPool.all);
             if(CrashUtils.generations.contains(k)){
                 controller.isChanged = true;
                 DA = new NSGAIIPopulationController();
                 DA.doInitial();
             }
+            controller.iterateACycle(k,DataPool.all);
             if(DA!=null) DA.iterateACycle(0,null);
         }
         DA = null;

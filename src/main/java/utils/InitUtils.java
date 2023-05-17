@@ -42,6 +42,7 @@ public class InitUtils {
         types[5] = new Type(5, 15/8.0, 131072000, 0.48);
         types[6] = new Type(6, 15/8.0, 131072000, 0.45);
         types[7] = new Type(7, 30/8.0, 131072000, 0.9);
+
         DataPool.typeNum = 8;
         DataPool.types = types;
     }
